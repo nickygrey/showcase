@@ -3,19 +3,19 @@ import PortfolioLayout from '../layouts/PortfolioLayout.astro';
 import { projects } from '../data/projects.js';
 
 // Group projects by domain
-const projectsByDomain = projects.reduce((acc, project) => {
+const projectsByDomain = projects.reduce((acc: Record<string, typeof projects>, project) => {
   project.domain.forEach(domain => {
     if (!acc[domain]) acc[domain] = [];
     acc[domain].push(project);
   });
   return acc;
-}, {});
+}, {} as Record<string, typeof projects>);
 
 // Featured project
-const featuredProject = projects.find(p => p.name === "Momentum");
+const featuredProject = projects.find(p => p.name === "Momentum")!;
 
 // Domain colors - distinctive, intentional palette avoiding AI-generated UI tells
-const domains = {
+const domains: Record<string, { name: string; color: string; gradient: string }> = {
   'blockchain': { name: 'Blockchain', color: '#ff6b35', gradient: 'from-orange-500/20 to-orange-600/10' },
   'ai-ml': { name: 'AI & Machine Learning', color: '#00b4d8', gradient: 'from-cyan-500/20 to-cyan-600/10' },
   'computer-vision': { name: 'Computer Vision', color: '#06d6a0', gradient: 'from-teal-500/20 to-teal-600/10' },
@@ -30,6 +30,8 @@ const statusDisplay = {
   'prototype': { symbol: '○', label: 'Prototype' },
   'educational': { symbol: '◇', label: 'Learning' }
 };
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <PortfolioLayout title="Full-Stack Development Work">
@@ -74,7 +76,7 @@ const statusDisplay = {
 
         <div class="about-image">
           <div class="image-frame">
-            <img src="/profile.jpg" alt="Vyacheslav Plotnikov" />
+            <img src={`${baseUrl}/profile.jpg`} alt="Vyacheslav Plotnikov" />
           </div>
         </div>
       </div>

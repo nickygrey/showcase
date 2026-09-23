@@ -19,6 +19,18 @@ npm run build
 
 Output in `dist/` directory.
 
+## Deployment
+
+This project is configured to deploy automatically to GitHub Pages using GitHub Actions:
+
+- **Live URL:** [https://nickygrey.github.io/showcase/](https://nickygrey.github.io/showcase/)
+- **Workflow:** `.github/workflows/deploy.yml` triggers on pushes to `main`.
+
+### GitHub Pages Setup (One-time):
+1. In your GitHub repository, navigate to **Settings** > **Pages**.
+2. Under **Build and deployment** > **Source**, select **GitHub Actions**.
+3. Push to `main` (or run manually from the **Actions** tab) to deploy.
+
 ## Tech Stack
 
 - Astro (static site generation)
