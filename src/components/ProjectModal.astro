@@ -9,9 +9,9 @@ const { domains } = Astro.props;
 ---
 
 <!-- Project Deep-Dive Modal -->
-<div id="project-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal-container">
-    <div class="modal-header">
+<div id="project-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true" data-lenis-prevent>
+  <div class="modal-container" data-lenis-prevent>
+    <div class="modal-header" data-lenis-prevent>
       <div class="modal-header-top">
         <div class="modal-badges">
           <span id="modal-index" class="modal-index">001</span>
@@ -33,7 +33,7 @@ const { domains } = Astro.props;
       <div id="modal-tech-stack" class="modal-tech-stack"></div>
     </div>
 
-    <div class="modal-body">
+    <div class="modal-body" data-lenis-prevent tabindex="0" aria-label="Project details content">
       <!-- Section: Purpose -->
       <section class="modal-section" id="section-purpose">
         <h3 class="section-title">
@@ -248,6 +248,14 @@ const { domains } = Astro.props;
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     pauseLenis();
+
+    const modalBody = modal.querySelector('.modal-body') as HTMLElement | null;
+    if (modalBody) {
+      modalBody.scrollTop = 0;
+      setTimeout(() => {
+        modalBody.focus();
+      }, 50);
+    }
   }
 
   function closeProjectModal() {
@@ -280,6 +288,21 @@ const { domains } = Astro.props;
         closeProjectModal();
       }
     });
+
+    const modalHeader = modal.querySelector('.modal-header');
+    const modalBody = modal.querySelector('.modal-body') as HTMLElement | null;
+
+    if (modalHeader && modalBody) {
+      modalHeader.addEventListener('wheel', (e) => {
+        modalBody.scrollTop += (e as WheelEvent).deltaY;
+      }, { passive: true });
+    }
+
+    modal.addEventListener('wheel', (e) => {
+      if (e.target === modal && modalBody) {
+        modalBody.scrollTop += (e as WheelEvent).deltaY;
+      }
+    }, { passive: true });
   }
 
   window.addEventListener('keydown', (e) => {
@@ -405,7 +428,8 @@ const { domains } = Astro.props;
   .modal-container {
     width: 100%;
     max-width: 900px;
-    max-height: 90vh;
+    height: 88vh;
+    max-height: calc(100vh - 48px);
     background: #0f0f11;
     border: 1px solid #27272a;
     border-radius: 16px;
@@ -536,11 +560,41 @@ const { domains } = Astro.props;
 
   /* Body */
   .modal-body {
+    flex: 1 1 0%;
+    min-height: 0;
+    max-height: 100%;
     padding: var(--space-8);
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
+    outline: none;
+  }
+
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: #141418;
+    border-radius: 4px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 4px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #52525b;
+  }
+
+  .modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: #3f3f46 #141418;
   }
 
   .modal-section {
@@ -689,7 +743,8 @@ const { domains } = Astro.props;
   /* Responsive Modal */
   @media (max-width: 768px) {
     .modal-container {
-      max-height: 95vh;
+      height: 92vh;
+      max-height: 96vh;
     }
 
     .modal-header {

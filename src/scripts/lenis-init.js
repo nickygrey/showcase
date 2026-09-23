@@ -22,6 +22,8 @@ export function initLenis() {
     smoothWheel: true,
     wheelMultiplier: 1,
     touchMultiplier: 2,
+    prevent: (node) => Boolean(node.closest?.('[data-lenis-prevent]')),
+    allowNestedScroll: true,
   });
 
   // Expose globally for modal control
