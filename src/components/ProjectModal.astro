@@ -177,7 +177,7 @@ const { domains } = Astro.props;
       if (project.features && project.features.length > 0) {
         featuresListEl.innerHTML = project.features.map((feat: string) => `
           <li class="feature-item">
-            <svg class="feature-bullet" viewBox="0 0 20 20" fill="currentColor">
+            <svg class="feature-bullet" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px; min-width: 16px; min-height: 16px; flex-shrink: 0;">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
             </svg>
             <span>${feat}</span>
@@ -400,6 +400,135 @@ const { domains } = Astro.props;
   .token.variable {
     color: #f43f5e;
   }
+
+  /* ============================================================================
+     MODAL DYNAMIC CONTENT (injected via innerHTML)
+     ============================================================================ */
+
+  #project-modal .modal-tech-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    background: #1c1c21;
+    color: #d4d4d8;
+    border: 1px solid #2d2d35;
+    border-radius: 5px;
+  }
+
+  #project-modal .features-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+  }
+
+  #project-modal .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: #d4d4d8;
+  }
+
+  #project-modal .feature-bullet {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    flex-shrink: 0;
+    color: #10b981;
+    margin-top: 2px;
+    display: inline-block;
+  }
+
+  #project-modal .snippets-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  #project-modal .snippet-card {
+    border: 1px solid #27272a;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #09090b;
+  }
+
+  #project-modal .snippet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+    background: #18181b;
+    border-bottom: 1px solid #27272a;
+  }
+
+  #project-modal .snippet-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  #project-modal .snippet-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e4e4e7;
+  }
+
+  #project-modal .snippet-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #71717a;
+    background: #27272a;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  #project-modal .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid #3f3f46;
+    color: #a1a1aa;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  #project-modal .copy-btn:hover {
+    background: #27272a;
+    color: #ffffff;
+    border-color: #71717a;
+  }
+
+  #project-modal .copy-btn.copied {
+    border-color: #10b981;
+    color: #10b981;
+  }
+
+  #project-modal .snippet-pre {
+    margin: 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    background: #0d0d10;
+  }
+
+  @media (max-width: 768px) {
+    #project-modal .features-list {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 
 <style>
@@ -547,16 +676,7 @@ const { domains } = Astro.props;
     gap: var(--space-2);
   }
 
-  .modal-tech-pill {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
-    background: #1c1c21;
-    color: #d4d4d8;
-    border: 1px solid #2d2d35;
-    border-radius: 5px;
-  }
+
 
   /* Body */
   .modal-body {
@@ -635,110 +755,7 @@ const { domains } = Astro.props;
     border-radius: 10px;
   }
 
-  /* Features List */
-  .features-list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
-    margin: 0;
-    padding: 0;
-  }
 
-  .feature-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-2);
-    font-size: var(--text-xs);
-    line-height: 1.5;
-    color: #d4d4d8;
-  }
-
-  .feature-bullet {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    color: #10b981;
-    margin-top: 1px;
-  }
-
-  /* Code Snippets */
-  .snippets-container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-  }
-
-  .snippet-card {
-    border: 1px solid #27272a;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #09090b;
-  }
-
-  .snippet-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-2) var(--space-4);
-    background: #18181b;
-    border-bottom: 1px solid #27272a;
-  }
-
-  .snippet-info {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  .snippet-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: #e4e4e7;
-  }
-
-  .snippet-lang {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    text-transform: uppercase;
-    color: #71717a;
-    background: #27272a;
-    padding: 1px 6px;
-    border-radius: 4px;
-  }
-
-  .copy-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: transparent;
-    border: 1px solid #3f3f46;
-    color: #a1a1aa;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    padding: 3px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .copy-btn:hover {
-    background: #27272a;
-    color: #ffffff;
-    border-color: #71717a;
-  }
-
-  .copy-btn.copied {
-    border-color: #10b981;
-    color: #10b981;
-  }
-
-  .snippet-pre {
-    margin: 0;
-    padding: var(--space-4);
-    overflow-x: auto;
-    background: #0d0d10;
-  }
 
   /* Responsive Modal */
   @media (max-width: 768px) {
