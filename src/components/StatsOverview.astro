@@ -1,0 +1,111 @@
+---
+import { projects } from '../data/projects.js';
+
+// Calculate Project Count
+const projectCount = projects.length;
+
+// Calculate Core Languages
+// Extract unique languages from techStack (check both primary and full arrays)
+const allLanguages = new Set<string>();
+projects.forEach(project => {
+  // Check full tech stack for more comprehensive language list
+  project.techStack.full.forEach(tech => {
+    // Identify core languages based on common patterns
+    const techLower = tech.toLowerCase();
+    if (techLower.includes('python')) allLanguages.add('Python');
+    if (techLower.includes('javascript') && !techLower.includes('typescript')) allLanguages.add('JavaScript');
+    if (techLower.includes('typescript')) allLanguages.add('TypeScript');
+    if (techLower.includes('go ') || tech === 'Go 1.22+') allLanguages.add('Go');
+    if (techLower.includes('swift')) allLanguages.add('Swift');
+    if (techLower.includes('html') || techLower.includes('css')) allLanguages.add('HTML/CSS');
+  });
+});
+const coreLanguagesCount = allLanguages.size;
+
+// Calculate Technical Domains
+// Extract unique domains from all projects
+const allDomains = new Set<string>();
+projects.forEach(project => {
+  project.domain.forEach(domain => allDomains.add(domain));
+});
+const technicalDomainsCount = allDomains.size;
+
+// Calculate Active Years Range
+// Extract years and find min/max
+const years = projects
+  .map(project => project.year)
+  .flatMap(yearString => {
+    // Handle ranges like "2023-2024"
+    if (yearString.includes('-')) {
+      const [start, end] = yearString.split('-').map(y => parseInt(y.trim()));
+      return [start, end];
+    }
+    return [parseInt(yearString)];
+  })
+  .filter(year => !isNaN(year));
+
+const minYear = Math.min(...years);
+const maxYear = Math.max(...years);
+const yearRange = `${minYear}–${maxYear}`;
+---
+
+<div class="stats-overview">
+  <div class="stat">
+    <div class="stat-value">{projectCount}</div>
+    <div class="stat-label">Projects</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">{coreLanguagesCount}</div>
+    <div class="stat-label">Core Languages</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">{technicalDomainsCount}</div>
+    <div class="stat-label">Technical Domains</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">{yearRange}</div>
+    <div class="stat-label">Active Years</div>
+  </div>
+</div>
+
+<style>
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-6);
+    padding: var(--space-8);
+    background-color: var(--color-surface);
+    border-radius: 8px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-4);
+  }
+
+  .stat-value {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-tight);
+    margin-bottom: var(--space-2);
+  }
+
+  .stat-label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Mobile breakpoint: 2 columns on small screens */
+  @media (max-width: 640px) {
+    .stats-overview {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
