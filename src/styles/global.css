@@ -285,7 +285,6 @@ textarea {
    ============================================================================ */
 
 button,
-[role='button'],
 input[type='button'],
 input[type='submit'],
 input[type='reset'] {
@@ -303,7 +302,6 @@ input[type='reset'] {
 }
 
 button:disabled,
-[role='button'][aria-disabled='true'],
 input[type='button']:disabled,
 input[type='submit']:disabled,
 input[type='reset']:disabled {
