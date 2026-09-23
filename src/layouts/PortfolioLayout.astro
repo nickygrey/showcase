@@ -1,9 +1,20 @@
 ---
 interface Props {
-  title: string;
+  title?: string;
+  description?: string;
+  image?: string;
 }
 
-const { title } = Astro.props;
+const {
+  title = "Vyacheslav Plotnikov — Full-Stack Developer & AI Engineer",
+  description = "Showcase of 14 engineering projects across AI/ML, Computer Vision, Mobile, Blockchain, and Full-Stack Web Development.",
+  image = "/profile.jpg"
+} = Astro.props;
+
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : 'https://nickygrey.github.io';
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://nickygrey.github.io');
+const ogImageUrl = `${siteUrl}${baseUrl}${image.startsWith('/') ? image : `/${image}`}`;
 ---
 
 <!DOCTYPE html>
@@ -12,6 +23,25 @@ const { title } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

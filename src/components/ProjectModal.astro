@@ -1,0 +1,717 @@
+---
+import { projects } from '../data/projects.js';
+
+interface Props {
+  domains: Record<string, { name: string; color: string; gradient: string }>;
+}
+
+const { domains } = Astro.props;
+---
+
+<!-- Project Deep-Dive Modal -->
+<div id="project-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div class="modal-badges">
+          <span id="modal-index" class="modal-index">001</span>
+          <span id="modal-domain-badge" class="modal-domain-badge">Domain</span>
+          <span id="modal-status-badge" class="modal-status-badge">● Shipped</span>
+          <span id="modal-year" class="modal-year">2024</span>
+        </div>
+        <button id="modal-close-btn" class="modal-close" aria-label="Close dialog">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <h2 id="modal-title" class="modal-title">Project Title</h2>
+      <p id="modal-tagline" class="modal-tagline">Project Tagline</p>
+
+      <div id="modal-tech-stack" class="modal-tech-stack"></div>
+    </div>
+
+    <div class="modal-body">
+      <!-- Section: Purpose -->
+      <section class="modal-section" id="section-purpose">
+        <h3 class="section-title">
+          <span class="section-hash">#</span> Purpose & Motivation
+        </h3>
+        <p id="modal-purpose" class="section-text"></p>
+      </section>
+
+      <!-- Section: Architecture -->
+      <section class="modal-section" id="section-architecture">
+        <h3 class="section-title">
+          <span class="section-hash">#</span> System Architecture
+        </h3>
+        <p id="modal-architecture" class="section-text"></p>
+      </section>
+
+      <!-- Section: Highlights & Lessons (2-col grid) -->
+      <div class="modal-grid-2">
+        <section class="modal-section" id="section-highlights">
+          <h3 class="section-title">
+            <span class="section-hash">#</span> Key Highlights
+          </h3>
+          <p id="modal-highlights" class="section-text"></p>
+        </section>
+
+        <section class="modal-section" id="section-lessons">
+          <h3 class="section-title">
+            <span class="section-hash">#</span> Lessons Learned
+          </h3>
+          <p id="modal-lessons" class="section-text"></p>
+        </section>
+      </div>
+
+      <!-- Section: Features List -->
+      <section class="modal-section" id="section-features">
+        <h3 class="section-title">
+          <span class="section-hash">#</span> Key Features
+        </h3>
+        <ul id="modal-features-list" class="features-list"></ul>
+      </section>
+
+      <!-- Section: Code Snippets -->
+      <section class="modal-section" id="section-snippets">
+        <h3 class="section-title">
+          <span class="section-hash">#</span> Code Implementation & Patterns
+        </h3>
+        <div id="modal-snippets-container" class="snippets-container"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Embedded Projects JSON -->
+<script define:vars={{ projects, domains }}>
+  window.__PROJECTS_DATA__ = projects;
+  window.__DOMAINS_DATA__ = domains;
+</script>
+
+<script>
+  import { pauseLenis, resumeLenis } from '../scripts/lenis-init.js';
+  import Prism from 'prismjs';
+  import 'prismjs/components/prism-python.js';
+  import 'prismjs/components/prism-javascript.js';
+  import 'prismjs/components/prism-typescript.js';
+
+  const modal = document.getElementById('project-modal');
+  const closeBtn = document.getElementById('modal-close-btn');
+
+  const statusLabels: Record<string, string> = {
+    'complete': '● Shipped',
+    'in-progress': '◐ In Progress',
+    'prototype': '○ Prototype',
+    'educational': '◇ Learning / Curriculum'
+  };
+
+  function openProjectModal(projectName: string) {
+    const projects = (window as any).__PROJECTS_DATA__ || [];
+    const domains = (window as any).__DOMAINS_DATA__ || {};
+    const project = projects.find((p: any) => p.name === projectName);
+    if (!project || !modal) return;
+
+    // Domain data
+    const domainKey = project.domain[0] || 'web';
+    const domainInfo = domains[domainKey] || { name: domainKey, color: '#00b4d8' };
+
+    // Fill Header
+    const indexEl = document.getElementById('modal-index');
+    if (indexEl) {
+      const idx = projects.indexOf(project) + 1;
+      indexEl.textContent = String(idx).padStart(3, '0');
+    }
+
+    const domainBadgeEl = document.getElementById('modal-domain-badge');
+    if (domainBadgeEl) {
+      domainBadgeEl.textContent = domainInfo.name;
+      domainBadgeEl.style.backgroundColor = `${domainInfo.color}25`;
+      domainBadgeEl.style.color = domainInfo.color;
+      domainBadgeEl.style.borderColor = `${domainInfo.color}50`;
+    }
+
+    const statusBadgeEl = document.getElementById('modal-status-badge');
+    if (statusBadgeEl) {
+      statusBadgeEl.textContent = statusLabels[project.status] || project.status;
+    }
+
+    const yearEl = document.getElementById('modal-year');
+    if (yearEl) yearEl.textContent = project.year || '';
+
+    const titleEl = document.getElementById('modal-title');
+    if (titleEl) titleEl.textContent = project.name;
+
+    const taglineEl = document.getElementById('modal-tagline');
+    if (taglineEl) taglineEl.textContent = project.tagline;
+
+    // Tech Stack Badges
+    const techStackEl = document.getElementById('modal-tech-stack');
+    if (techStackEl) {
+      const allTech = project.techStack.full || project.techStack.primary || [];
+      techStackEl.innerHTML = allTech.map((tech: string) => `
+        <span class="modal-tech-pill">${tech}</span>
+      `).join('');
+    }
+
+    // Purpose & Architecture
+    const purposeEl = document.getElementById('modal-purpose');
+    if (purposeEl) purposeEl.textContent = project.deepDive?.purpose || 'No description provided.';
+
+    const archEl = document.getElementById('modal-architecture');
+    if (archEl) archEl.textContent = project.deepDive?.architecture || 'No architecture details provided.';
+
+    // Highlights & Lessons
+    const highlightsEl = document.getElementById('modal-highlights');
+    if (highlightsEl) highlightsEl.textContent = project.deepDive?.highlights || 'None noted.';
+
+    const lessonsEl = document.getElementById('modal-lessons');
+    if (lessonsEl) lessonsEl.textContent = project.deepDive?.lessons || 'None noted.';
+
+    // Features List
+    const featuresListEl = document.getElementById('modal-features-list');
+    if (featuresListEl) {
+      if (project.features && project.features.length > 0) {
+        featuresListEl.innerHTML = project.features.map((feat: string) => `
+          <li class="feature-item">
+            <svg class="feature-bullet" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>${feat}</span>
+          </li>
+        `).join('');
+      } else {
+        featuresListEl.innerHTML = '<li class="feature-item">See architecture & code snippets for details.</li>';
+      }
+    }
+
+    // Code Snippets
+    const snippetsContainer = document.getElementById('modal-snippets-container');
+    const snippetsSection = document.getElementById('section-snippets');
+    if (snippetsContainer && snippetsSection) {
+      const snippets = project.deepDive?.codeSnippets || [];
+      if (snippets.length === 0) {
+        snippetsSection.style.display = 'none';
+      } else {
+        snippetsSection.style.display = 'block';
+        snippetsContainer.innerHTML = snippets.map((s: any, idx: number) => `
+          <div class="snippet-card">
+            <div class="snippet-header">
+              <div class="snippet-info">
+                <span class="snippet-title">${s.title}</span>
+                <span class="snippet-lang">${s.language}</span>
+              </div>
+              <button class="copy-btn" data-snippet-idx="${idx}" aria-label="Copy snippet to clipboard">
+                <svg class="copy-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span class="copy-text">Copy</span>
+              </button>
+            </div>
+            <pre class="snippet-pre"><code class="language-${s.language || 'javascript'}">${escapeHtml(s.code)}</code></pre>
+          </div>
+        `).join('');
+
+        // Wire copy buttons
+        snippetsContainer.querySelectorAll('.copy-btn').forEach((btn, i) => {
+          btn.addEventListener('click', () => {
+            const codeToCopy = snippets[i]?.code || '';
+            navigator.clipboard.writeText(codeToCopy).then(() => {
+              const textSpan = btn.querySelector('.copy-text');
+              if (textSpan) textSpan.textContent = 'Copied!';
+              btn.classList.add('copied');
+              setTimeout(() => {
+                if (textSpan) textSpan.textContent = 'Copy';
+                btn.classList.remove('copied');
+              }, 2000);
+            });
+          });
+        });
+
+        // Trigger Prism syntax highlighting
+        try {
+          snippetsContainer.querySelectorAll('code').forEach((codeBlock) => {
+            Prism.highlightElement(codeBlock);
+          });
+        } catch (e) {
+          console.warn('Prism highlight error:', e);
+        }
+      }
+    }
+
+    // Open modal
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    pauseLenis();
+  }
+
+  function closeProjectModal() {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    resumeLenis();
+  }
+
+  function escapeHtml(text: string) {
+    const map: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
+  }
+
+  // Event Listeners
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeProjectModal);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeProjectModal();
+      }
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('is-open')) {
+      closeProjectModal();
+    }
+  });
+
+  // Attach click listener to project cards and featured hero card
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-project-name]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        // Prevent opening if clicking an external link inside
+        if ((e.target as HTMLElement).closest('a')) return;
+        const name = el.getAttribute('data-project-name');
+        if (name) openProjectModal(name);
+      });
+    });
+  });
+
+  // Expose for external calls
+  (window as any).openProjectModal = openProjectModal;
+  (window as any).closeProjectModal = closeProjectModal;
+</script>
+
+<style is:global>
+  /* Prism syntax theme for modal code snippets */
+  code[class*="language-"],
+  pre[class*="language-"] {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    text-shadow: none;
+    direction: ltr;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    tab-size: 2;
+    hyphens: none;
+  }
+
+  .token.comment,
+  .token.prolog,
+  .token.doctype,
+  .token.cdata {
+    color: #64748b;
+    font-style: italic;
+  }
+
+  .token.punctuation {
+    color: #94a3b8;
+  }
+
+  .token.property,
+  .token.tag,
+  .token.boolean,
+  .token.number,
+  .token.constant,
+  .token.symbol {
+    color: #f59e0b;
+  }
+
+  .token.selector,
+  .token.attr-name,
+  .token.string,
+  .token.char,
+  .token.builtin {
+    color: #10b981;
+  }
+
+  .token.operator,
+  .token.entity,
+  .token.url,
+  .language-css .token.string,
+  .style .token.string {
+    color: #38bdf8;
+  }
+
+  .token.atrule,
+  .token.attr-value,
+  .token.keyword {
+    color: #818cf8;
+    font-weight: 600;
+  }
+
+  .token.function,
+  .token.class-name {
+    color: #38bdf8;
+  }
+
+  .token.regex,
+  .token.important,
+  .token.variable {
+    color: #f43f5e;
+  }
+</style>
+
+<style>
+  /* Modal Backdrop */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease-out;
+  }
+
+  .modal-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Modal Container */
+  .modal-container {
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    background: #0f0f11;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.96) translateY(12px);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .modal-backdrop.is-open .modal-container {
+    transform: scale(1) translateY(0);
+  }
+
+  /* Header */
+  .modal-header {
+    padding: var(--space-8);
+    background: #141417;
+    border-bottom: 1px solid #222226;
+    flex-shrink: 0;
+  }
+
+  .modal-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+  }
+
+  .modal-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .modal-index {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--text-sm);
+    color: #666;
+    font-weight: 700;
+  }
+
+  .modal-domain-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+  }
+
+  .modal-status-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #10b981;
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .modal-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #71717a;
+    background: #1e1e24;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .modal-close {
+    background: transparent;
+    border: 1px solid #333;
+    color: #a1a1aa;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .modal-close:hover {
+    background: #27272a;
+    color: #ffffff;
+    border-color: #52525b;
+  }
+
+  .modal-title {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
+  }
+
+  .modal-tagline {
+    font-size: var(--text-base);
+    color: #a1a1aa;
+    line-height: 1.5;
+    margin-bottom: var(--space-4);
+  }
+
+  .modal-tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .modal-tech-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    background: #1c1c21;
+    color: #d4d4d8;
+    border: 1px solid #2d2d35;
+    border-radius: 5px;
+  }
+
+  /* Body */
+  .modal-body {
+    padding: var(--space-8);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .modal-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .section-hash {
+    color: #00b4d8;
+  }
+
+  .section-text {
+    font-size: var(--text-sm);
+    line-height: 1.75;
+    color: #b0b0b8;
+  }
+
+  .modal-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    padding: var(--space-5);
+    background: #141418;
+    border: 1px solid #222228;
+    border-radius: 10px;
+  }
+
+  /* Features List */
+  .features-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: #d4d4d8;
+  }
+
+  .feature-bullet {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #10b981;
+    margin-top: 1px;
+  }
+
+  /* Code Snippets */
+  .snippets-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .snippet-card {
+    border: 1px solid #27272a;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #09090b;
+  }
+
+  .snippet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+    background: #18181b;
+    border-bottom: 1px solid #27272a;
+  }
+
+  .snippet-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .snippet-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e4e4e7;
+  }
+
+  .snippet-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #71717a;
+    background: #27272a;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid #3f3f46;
+    color: #a1a1aa;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .copy-btn:hover {
+    background: #27272a;
+    color: #ffffff;
+    border-color: #71717a;
+  }
+
+  .copy-btn.copied {
+    border-color: #10b981;
+    color: #10b981;
+  }
+
+  .snippet-pre {
+    margin: 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    background: #0d0d10;
+  }
+
+  /* Responsive Modal */
+  @media (max-width: 768px) {
+    .modal-container {
+      max-height: 95vh;
+    }
+
+    .modal-header {
+      padding: var(--space-5);
+    }
+
+    .modal-body {
+      padding: var(--space-5);
+      gap: var(--space-6);
+    }
+
+    .modal-title {
+      font-size: var(--text-2xl);
+    }
+
+    .modal-grid-2 {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .features-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
