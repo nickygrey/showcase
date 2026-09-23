@@ -35,7 +35,7 @@ const technicalDomainsCount = allDomains.size;
 const years = projects
   .map(project => project.year)
   .flatMap(yearString => {
-    // Handle ranges like "2023-2024"
+    // Handle ranges like "2025-2026"
     if (yearString.includes('-')) {
       const [start, end] = yearString.split('-').map(y => parseInt(y.trim()));
       return [start, end];

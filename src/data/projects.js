@@ -8,7 +8,7 @@ export const projects = [
       full: ["React 18", "Vite", "Tailwind CSS v4", "Capacitor", "Apple HealthKit", "localStorage", "iOS"]
     },
     status: "in-progress",
-    year: "2024",
+    year: "2026",
     features: [
       "Apple HealthKit integration for automatic activity tracking",
       "XP and leveling system with 35 unlockable trophies",
@@ -60,7 +60,7 @@ export const projects = [
       full: ["Python 3", "Flask 3.0", "ECDSA", "UTXO Model", "Proof of Work", "Merkle Trees", "REST API", "SHA-256"]
     },
     status: "complete",
-    year: "2024",
+    year: "2026",
     features: [
       "UTXO-based transaction model similar to Bitcoin",
       "Elliptic Curve Digital Signature Algorithm for secure transactions",
@@ -115,7 +115,7 @@ export const projects = [
       full: ["Python 3", "Ultralytics YOLO 8.3", "OpenCV 4.10", "FastAPI", "PyTorch", "NumPy", "Real-time Detection"]
     },
     status: "complete",
-    year: "2024",
+    year: "2026",
     features: [
       "Real-time object detection with YOLO v8 architecture",
       "Custom model training pipeline with dataset management",
@@ -168,7 +168,7 @@ export const projects = [
       full: ["Python 3.14", "Google Vertex AI", "Gemini 2.5 Flash Image", "Imagen 3", "Veo 3.1", "FastAPI", "Async/Await"]
     },
     status: "complete",
-    year: "2024",
+    year: "2026",
     features: [
       "Automated UI asset generation from text descriptions",
       "Multi-modal understanding with Gemini 2.5 Flash Image",
@@ -215,7 +215,7 @@ export const projects = [
       full: ["Astro 7.1", "MDX", "TypeScript", "Tailwind CSS", "SEO", "RSS", "Sitemap", "Static Site Generation"]
     },
     status: "complete",
-    year: "2024",
+    year: "2026",
     features: [
       "100/100 Lighthouse score across all metrics",
       "MDX for rich, interactive blog content",
@@ -263,7 +263,7 @@ export const collections = {
       full: ["Flask 3.0", "Python", "TMDB API", "JavaScript", "HTML5", "CSS3", "RESTful API", "Responsive Design"]
     },
     status: "complete",
-    year: "2024",
+    year: "2025",
     features: [
       "Integration with The Movie Database (TMDB) API",
       "Genre-based movie filtering and discovery",
@@ -318,7 +318,7 @@ def fetch_movies(genre_id, page=1):
       full: ["Vite", "GSAP 3.15", "Lenis 1.3.26", "Higgsfield AI", "JavaScript", "CSS3", "3D Transforms", "ScrollTrigger"]
     },
     status: "in-progress",
-    year: "2024",
+    year: "2025",
     features: [
       "Smooth scroll experience with Lenis",
       "Advanced GSAP animations with ScrollTrigger",
@@ -374,7 +374,7 @@ tl.to('.hero-title', {
       full: ["Vanilla JavaScript", "CSS3", "HTML5", "Kinetic Typography", "Scroll Animations", "Monospace Design"]
     },
     status: "complete",
-    year: "2024",
+    year: "2025",
     features: [
       "Kinetic typography with motion on scroll",
       "Monospace aesthetic for technical feel",
@@ -424,7 +424,7 @@ tl.to('.hero-title', {
       full: ["Python 3", "NumPy", "Pandas", "Scikit-learn", "Matplotlib", "Jupyter", "Linear Algebra", "Calculus"]
     },
     status: "educational",
-    year: "2023-2024",
+    year: "2025-2026",
     features: [
       "3,873 files covering complete ML curriculum",
       "Mathematical foundations including linear algebra and calculus",
@@ -481,7 +481,7 @@ class LinearRegression:
       full: ["Python 3", "TensorFlow", "Keras", "OpenCV", "NLP", "CNN", "RNN", "Transfer Learning", "PyTorch"]
     },
     status: "educational",
-    year: "2023-2024",
+    year: "2025-2026",
     features: [
       "98 structured files covering modern AI topics",
       "Deep learning architectures (CNN, RNN, Transformers)",
@@ -532,7 +532,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
       full: ["Markdown", "CNN", "ResNet", "DenseNet", "EfficientNet", "Image Classification", "Architecture Design"]
     },
     status: "complete",
-    year: "2024",
+    year: "2025",
     features: [
       "In-depth CNN architecture explanations",
       "ResNet and residual connections deep dive",
@@ -559,7 +559,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
       full: ["Turborepo", "React", "Go 1.22+", "PostgreSQL", "Redis", "Docker", "REST API", "TypeScript"]
     },
     status: "in-progress",
-    year: "2024",
+    year: "2026",
     features: [
       "Turborepo monorepo for efficient multi-package development",
       "React frontend with TypeScript",
@@ -614,7 +614,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
       full: ["Expo", "TypeScript", "Capacitor", "React Native", "iOS", "Interactive Prototype"]
     },
     status: "prototype",
-    year: "2024",
+    year: "2025",
     features: [
       "Rapid prototyping with Expo development tools",
       "TypeScript for type-safe component development",
@@ -641,7 +641,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
       full: ["Expo", "React Native", "TypeScript", "AI Integration", "iPhone", "Prototype"]
     },
     status: "prototype",
-    year: "2024",
+    year: "2026",
     features: [
       "React Native for cross-platform mobile development",
       "Expo managed workflow for simplified development",
