@@ -14,13 +14,13 @@ const projectsByDomain = projects.reduce((acc, project) => {
 // Featured project
 const featuredProject = projects.find(p => p.name === "Advanced Cryptocurrency Blockchain");
 
-// Domain colors and display
+// Domain colors - distinctive, intentional palette avoiding AI-generated UI tells
 const domains = {
-  'blockchain': { name: 'Blockchain', color: '#f59e0b', gradient: 'from-amber-500/20 to-amber-600/10' },
-  'ai-ml': { name: 'AI & Machine Learning', color: '#8b5cf6', gradient: 'from-violet-500/20 to-violet-600/10' },
-  'computer-vision': { name: 'Computer Vision', color: '#3b82f6', gradient: 'from-blue-500/20 to-blue-600/10' },
-  'mobile': { name: 'Mobile Development', color: '#10b981', gradient: 'from-emerald-500/20 to-emerald-600/10' },
-  'web': { name: 'Web Development', color: '#ec4899', gradient: 'from-pink-500/20 to-pink-600/10' }
+  'blockchain': { name: 'Blockchain', color: '#ff6b35', gradient: 'from-orange-500/20 to-orange-600/10' },
+  'ai-ml': { name: 'AI & Machine Learning', color: '#00b4d8', gradient: 'from-cyan-500/20 to-cyan-600/10' },
+  'computer-vision': { name: 'Computer Vision', color: '#06d6a0', gradient: 'from-teal-500/20 to-teal-600/10' },
+  'mobile': { name: 'Mobile Development', color: '#ef476f', gradient: 'from-rose-500/20 to-rose-600/10' },
+  'web': { name: 'Web Development', color: '#ffd23f', gradient: 'from-yellow-400/20 to-yellow-500/10' }
 };
 
 // Status symbols with meanings
@@ -287,10 +287,7 @@ const statusDisplay = {
 
   .title-line {
     display: block;
-    background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ffffff;
   }
 
   .hero-tagline {
@@ -417,10 +414,6 @@ const statusDisplay = {
     font-weight: 800;
     color: #ffffff;
     line-height: 1;
-    background: linear-gradient(135deg, #ffffff 0%, #808080 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
 
   .count-label {
