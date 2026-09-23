@@ -47,15 +47,12 @@ const statusColors = {
           <article class="project-card">
             <div class="project-card-header">
               <h3 class="project-name">{project.name}</h3>
-              <div class="project-meta">
-                <span class="project-year">{project.year}</span>
-                <span
-                  class="project-status"
-                  style={`color: ${statusColors[project.status]}`}
-                >
-                  {statusDisplay[project.status]}
-                </span>
-              </div>
+              <span
+                class="project-status"
+                style={`color: ${statusColors[project.status]}`}
+              >
+                {statusDisplay[project.status]}
+              </span>
             </div>
 
             <p class="project-tagline">{project.tagline}</p>
