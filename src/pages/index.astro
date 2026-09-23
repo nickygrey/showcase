@@ -12,7 +12,7 @@ const projectsByDomain = projects.reduce((acc, project) => {
 }, {});
 
 // Featured project
-const featuredProject = projects.find(p => p.name === "Advanced Cryptocurrency Blockchain");
+const featuredProject = projects.find(p => p.name === "Momentum");
 
 // Domain colors - distinctive, intentional palette avoiding AI-generated UI tells
 const domains = {
@@ -44,14 +44,14 @@ const statusDisplay = {
 
   <main class="portfolio">
     <!-- Hero Section with Dynamic Background -->
-    <section class="hero" style={`--domain-color: ${domains.blockchain.color}`}>
+    <section class="hero" style={`--domain-color: ${domains[featuredProject.domain[0]].color}`}>
       <div class="hero-bg-pattern"></div>
 
       <div class="hero-content">
         <div class="hero-label">
           <span class="line-number">001</span>
-          <span class="domain-badge" style={`background: ${domains.blockchain.color}; box-shadow: 0 0 20px ${domains.blockchain.color}40`}>
-            {domains.blockchain.name}
+          <span class="domain-badge" style={`background: ${domains[featuredProject.domain[0]].color}; box-shadow: 0 0 20px ${domains[featuredProject.domain[0]].color}40`}>
+            {domains[featuredProject.domain[0]].name}
           </span>
         </div>
 
