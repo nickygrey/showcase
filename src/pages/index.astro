@@ -2,7 +2,7 @@
 import PortfolioLayout from '../layouts/PortfolioLayout.astro';
 import { projects } from '../data/projects.js';
 
-// Group projects by domain for exhibition-style presentation
+// Group projects by domain
 const projectsByDomain = projects.reduce((acc, project) => {
   project.domain.forEach(domain => {
     if (!acc[domain]) acc[domain] = [];
@@ -11,114 +11,162 @@ const projectsByDomain = projects.reduce((acc, project) => {
   return acc;
 }, {});
 
-// Featured project (most technically diverse)
+// Featured project
 const featuredProject = projects.find(p => p.name === "Advanced Cryptocurrency Blockchain");
 
-// Domain display names
-const domainNames = {
-  'mobile': 'Mobile',
-  'web': 'Web',
-  'ai-ml': 'AI & ML',
-  'blockchain': 'Blockchain',
-  'computer-vision': 'Computer Vision'
+// Domain colors and display
+const domains = {
+  'blockchain': { name: 'Blockchain', color: '#f59e0b', gradient: 'from-amber-500/20 to-amber-600/10' },
+  'ai-ml': { name: 'AI & Machine Learning', color: '#8b5cf6', gradient: 'from-violet-500/20 to-violet-600/10' },
+  'computer-vision': { name: 'Computer Vision', color: '#3b82f6', gradient: 'from-blue-500/20 to-blue-600/10' },
+  'mobile': { name: 'Mobile Development', color: '#10b981', gradient: 'from-emerald-500/20 to-emerald-600/10' },
+  'web': { name: 'Web Development', color: '#ec4899', gradient: 'from-pink-500/20 to-pink-600/10' }
 };
 
-// Status indicators
-const statusMarkers = {
-  'complete': '●',
-  'in-progress': '○',
-  'prototype': '◐',
-  'educational': '◇'
+// Status symbols with meanings
+const statusDisplay = {
+  'complete': { symbol: '●', label: 'Shipped' },
+  'in-progress': { symbol: '◐', label: 'Active' },
+  'prototype': { symbol: '○', label: 'Prototype' },
+  'educational': { symbol: '◇', label: 'Learning' }
 };
 ---
 
 <PortfolioLayout title="Full-Stack Development Work">
   <!--
-    THESIS: Technical breadth as visual fact—five domains exhibited at scale, not summarized in cards.
-    OWN-WORLD: Exhibition typography (large numerals, technical mono details), asymmetric composition, domain-as-color, generous negative space.
-    STORY: The visitor immediately sees full-stack range (blockchain through mobile through AI), then explores depth per domain.
-    FIRST VIEWPORT: Hero project (Blockchain) takes left 60%, domain index takes right 40%, both at exhibition scale.
-    FORM: Technical exhibition / portfolio showcase
+    THESIS: Technical breadth as visual spectrum—domains rendered as distinct color worlds, code-inspired typography, data-viz composition
+    OWN-WORLD: Code editor aesthetic (syntax colors, mono type, line numbers), asymmetric grid, domain-as-color-field, technical patterns
+    STORY: Visitor sees five distinct technical worlds in color, explores depth through visual navigation, understands range through chromatic organization
+    FIRST VIEWPORT: Split-screen color field: amber blockchain hero (left 55%), violet AI sidebar (right 45%), both at immersive scale with technical overlays
+    FORM: Technical portfolio as color-coded exhibition with code aesthetic
     FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
   -->
 
-  <main class="exhibition">
-    <!-- Hero Project - Left Column -->
-    <section class="hero-project">
+  <main class="portfolio">
+    <!-- Hero Section with Dynamic Background -->
+    <section class="hero" style={`--domain-color: ${domains.blockchain.color}`}>
+      <div class="hero-bg-pattern"></div>
+
       <div class="hero-content">
-        <div class="hero-meta">
-          <span class="hero-number">01</span>
-          <span class="hero-domain">Blockchain</span>
+        <div class="hero-label">
+          <span class="line-number">001</span>
+          <span class="domain-badge" style={`background: ${domains.blockchain.color}; box-shadow: 0 0 20px ${domains.blockchain.color}40`}>
+            {domains.blockchain.name}
+          </span>
         </div>
 
-        <h1 class="hero-title">{featuredProject.name}</h1>
+        <h1 class="hero-title">
+          <span class="title-line">{featuredProject.name.split(' ')[0]}</span>
+          <span class="title-line">{featuredProject.name.split(' ').slice(1).join(' ')}</span>
+        </h1>
 
-        <p class="hero-description">
-          {featuredProject.tagline}
-        </p>
+        <p class="hero-tagline">{featuredProject.tagline}</p>
 
-        <div class="hero-tech-stack">
-          {featuredProject.techStack.primary.map((tech) => (
-            <span class="hero-tech">{tech}</span>
+        <div class="hero-tech-grid">
+          {featuredProject.techStack.primary.map((tech, i) => (
+            <div class="tech-item" style={`animation-delay: ${i * 0.1}s`}>
+              <span class="tech-bracket">[</span>
+              <span class="tech-name">{tech}</span>
+              <span class="tech-bracket">]</span>
+            </div>
           ))}
         </div>
 
-        <div class="hero-features">
-          {featuredProject.features.slice(0, 3).map((feature) => (
-            <div class="hero-feature">
-              <span class="feature-marker">→</span>
+        <div class="hero-highlights">
+          {featuredProject.features.slice(0, 3).map((feature, i) => (
+            <div class="highlight-item" style={`animation-delay: ${(i + 4) * 0.1}s`}>
+              <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/>
+              </svg>
               <span>{feature}</span>
             </div>
           ))}
         </div>
       </div>
+
+      <div class="hero-accent-line"></div>
     </section>
 
-    <!-- Domain Index - Right Column -->
-    <aside class="domain-index">
-      <div class="index-header">
-        <h2 class="index-title">Technical Domains</h2>
-        <div class="index-count">
-          <span class="count-number">{projects.length}</span>
-          <span class="count-label">Projects</span>
+    <!-- Domain Navigation Sidebar -->
+    <aside class="domain-sidebar">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title">
+          <span class="title-bracket">{'<'}</span>
+          Technical Domains
+          <span class="title-bracket">{'/>'}</span>
+        </h2>
+        <div class="project-count">
+          <span class="count-value">{projects.length}</span>
+          <span class="count-label">projects</span>
         </div>
       </div>
 
       <nav class="domain-nav">
-        {Object.entries(projectsByDomain).map(([domain, domainProjects]) => (
-          <a href={`#${domain}`} class="domain-link" data-domain={domain}>
-            <span class="domain-name">{domainNames[domain]}</span>
-            <span class="domain-count">{domainProjects.length}</span>
+        {Object.entries(projectsByDomain).sort((a, b) => b[1].length - a[1].length).map(([domain, domainProjects]) => (
+          <a href={`#${domain}`} class="nav-item" data-domain={domain}>
+            <div class="nav-color-bar" style={`background: ${domains[domain].color}`}></div>
+            <div class="nav-content">
+              <span class="nav-name">{domains[domain].name}</span>
+              <span class="nav-count">{domainProjects.length}</span>
+            </div>
+            <svg class="nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 5l7 7-7 7" stroke-width="2"/>
+            </svg>
           </a>
         ))}
       </nav>
+
+      <div class="sidebar-decoration">
+        <div class="decoration-line"></div>
+        <div class="decoration-dot"></div>
+      </div>
     </aside>
 
-    <!-- Project Catalog by Domain -->
-    <section class="project-catalog">
-      {Object.entries(projectsByDomain).map(([domain, domainProjects]) => (
-        <div class="domain-section" id={domain}>
-          <header class="domain-header">
-            <h2 class="domain-title">{domainNames[domain]}</h2>
-            <span class="domain-project-count">{domainProjects.length} {domainProjects.length === 1 ? 'project' : 'projects'}</span>
-          </header>
+    <!-- Projects by Domain -->
+    <section class="catalog">
+      {Object.entries(projectsByDomain).sort((a, b) => b[1].length - a[1].length).map(([domain, domainProjects]) => (
+        <div class="domain-block" id={domain} style={`--domain-color: ${domains[domain].color}`}>
+          <div class="domain-header">
+            <div class="header-top">
+              <div class="domain-color-field" style={`background: linear-gradient(135deg, ${domains[domain].color}20, ${domains[domain].color}05)`}></div>
+              <h2 class="domain-title">{domains[domain].name}</h2>
+            </div>
+            <div class="domain-meta">
+              <span class="meta-count">{domainProjects.length} {domainProjects.length === 1 ? 'project' : 'projects'}</span>
+              <div class="meta-line"></div>
+            </div>
+          </div>
 
-          <div class="domain-projects">
+          <div class="project-grid">
             {domainProjects.map((project, index) => (
-              <article class="project-entry">
-                <div class="project-index">
-                  <span class="project-number">{String(index + 1).padStart(2, '0')}</span>
-                  <span class="project-status">{statusMarkers[project.status]}</span>
+              <article class="project-card">
+                <div class="card-header">
+                  <div class="card-number-group">
+                    <span class="card-index">{String(index + 1).padStart(2, '0')}</span>
+                    <span class="card-status" title={statusDisplay[project.status].label}>
+                      {statusDisplay[project.status].symbol}
+                    </span>
+                  </div>
+                  <div class="card-accent" style={`background: ${domains[domain].color}`}></div>
                 </div>
 
-                <div class="project-main">
-                  <h3 class="project-title">{project.name}</h3>
-                  <p class="project-description">{project.tagline}</p>
+                <h3 class="card-title">{project.name}</h3>
+                <p class="card-description">{project.tagline}</p>
 
-                  <div class="project-tech-list">
-                    {project.techStack.primary.map((tech) => (
-                      <span class="project-tech">{tech}</span>
-                    ))}
+                <div class="card-tech">
+                  {project.techStack.primary.slice(0, 4).map((tech) => (
+                    <span class="card-tech-tag">{tech}</span>
+                  ))}
+                  {project.techStack.primary.length > 4 && (
+                    <span class="card-tech-more">+{project.techStack.primary.length - 4}</span>
+                  )}
+                </div>
+
+                <div class="card-footer">
+                  <div class="footer-pattern">
+                    <div class="pattern-dot"></div>
+                    <div class="pattern-dot"></div>
+                    <div class="pattern-dot"></div>
                   </div>
                 </div>
               </article>
@@ -127,398 +175,668 @@ const statusMarkers = {
         </div>
       ))}
     </section>
+
+    <!-- Footer Credits -->
+    <footer class="portfolio-footer">
+      <div class="footer-content">
+        <div class="footer-badge">
+          <span class="badge-bracket">{'<'}</span>
+          <span>Full-Stack Development</span>
+          <span class="badge-bracket">{'/>'}</span>
+        </div>
+        <div class="footer-line"></div>
+      </div>
+    </footer>
   </main>
 </PortfolioLayout>
 
 <style>
   /* ============================================================================
-     EXHIBITION LAYOUT
+     BASE LAYOUT & GRID
      ============================================================================ */
 
-  .exhibition {
-    min-height: 100vh;
+  .portfolio {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    grid-template-rows: 100vh auto;
+    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-rows: 100vh auto auto;
     grid-template-areas:
-      "hero index"
-      "catalog catalog";
-    background: linear-gradient(to bottom, #fafafa 0%, #ffffff 100vh);
+      "hero sidebar"
+      "catalog catalog"
+      "footer footer";
+    background: #0a0a0a;
+    color: #ffffff;
+    position: relative;
   }
 
   /* ============================================================================
-     HERO PROJECT
+     HERO SECTION
      ============================================================================ */
 
-  .hero-project {
+  .hero {
     grid-area: hero;
-    padding: calc(var(--space-24) * 1.5) var(--space-12);
+    position: relative;
+    padding: calc(var(--space-24) * 2) var(--space-16);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    border-right: 1px solid #e5e5e5;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    overflow: hidden;
+  }
+
+  .hero-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, transparent 49%, var(--domain-color)08 50%, transparent 51%),
+      linear-gradient(0deg, transparent 49%, var(--domain-color)08 50%, transparent 51%);
+    background-size: 80px 80px;
+    opacity: 0.3;
+    animation: patternSlide 20s linear infinite;
+  }
+
+  @keyframes patternSlide {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(80px, 80px); }
   }
 
   .hero-content {
-    max-width: 600px;
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
   }
 
-  .hero-meta {
+  .hero-label {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-4);
     margin-bottom: var(--space-8);
   }
 
-  .hero-number {
+  .line-number {
     font-family: 'JetBrains Mono', monospace;
-    font-size: var(--text-5xl);
-    font-weight: 700;
-    color: #171717;
-    line-height: 1;
-    letter-spacing: -0.02em;
+    font-size: var(--text-sm);
+    color: #666;
+    font-weight: 500;
+    user-select: none;
   }
 
-  .hero-domain {
-    font-size: var(--text-sm);
-    font-weight: 600;
+  .domain-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    padding: var(--space-2) var(--space-4);
+    border-radius: 6px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #737373;
+    color: #0a0a0a;
+    animation: badgeGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes badgeGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
   }
 
   .hero-title {
-    font-size: var(--text-4xl);
-    font-weight: 700;
-    line-height: 1.1;
-    color: #171717;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    line-height: 0.95;
     margin-bottom: var(--space-6);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
   }
 
-  .hero-description {
-    font-size: var(--text-lg);
+  .title-line {
+    display: block;
+    background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-tagline {
+    font-size: var(--text-xl);
     line-height: 1.6;
-    color: #525252;
-    margin-bottom: var(--space-8);
+    color: #b0b0b0;
+    margin-bottom: var(--space-12);
+    max-width: 600px;
   }
 
-  .hero-tech-stack {
+  .hero-tech-grid {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
     margin-bottom: var(--space-12);
     padding-bottom: var(--space-8);
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #333;
   }
 
-  .hero-tech {
+  .tech-item {
     font-family: 'JetBrains Mono', monospace;
-    font-size: var(--text-xs);
-    font-weight: 500;
-    padding: var(--space-2) var(--space-3);
-    background: #f5f5f5;
-    color: #171717;
-    border-radius: 4px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: #ffffff;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
   }
 
-  .hero-features {
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  .tech-bracket {
+    color: var(--domain-color);
+    font-weight: 700;
+  }
+
+  .tech-name {
+    padding: 0 var(--space-2);
+  }
+
+  .hero-highlights {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
   }
 
-  .hero-feature {
+  .highlight-item {
     display: flex;
     align-items: flex-start;
     gap: var(--space-3);
-    font-size: var(--text-sm);
-    line-height: 1.5;
-    color: #525252;
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: #d0d0d0;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
   }
 
-  .feature-marker {
-    color: #737373;
+  .highlight-icon {
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
-    font-weight: 600;
+    color: var(--domain-color);
+    margin-top: 2px;
+  }
+
+  .hero-accent-line {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--domain-color) 0%, transparent 100%);
   }
 
   /* ============================================================================
-     DOMAIN INDEX
+     DOMAIN SIDEBAR
      ============================================================================ */
 
-  .domain-index {
-    grid-area: index;
-    padding: calc(var(--space-24) * 1.5) var(--space-8) var(--space-12);
+  .domain-sidebar {
+    grid-area: sidebar;
+    padding: calc(var(--space-24) * 2) var(--space-8);
+    background: linear-gradient(135deg, #141414 0%, #0a0a0a 100%);
+    border-left: 1px solid #222;
     display: flex;
     flex-direction: column;
-    background: #fafafa;
+    position: relative;
   }
 
-  .index-header {
-    margin-bottom: var(--space-12);
+  .sidebar-header {
+    margin-bottom: var(--space-16);
   }
 
-  .index-title {
+  .sidebar-title {
     font-size: var(--text-2xl);
     font-weight: 700;
-    color: #171717;
     margin-bottom: var(--space-6);
+    color: #ffffff;
     letter-spacing: -0.01em;
   }
 
-  .index-count {
+  .title-bracket {
+    font-family: 'JetBrains Mono', monospace;
+    color: #666;
+    font-weight: 700;
+  }
+
+  .project-count {
     display: flex;
     align-items: baseline;
     gap: var(--space-3);
   }
 
-  .count-number {
+  .count-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: var(--text-4xl);
-    font-weight: 700;
-    color: #171717;
+    font-size: var(--text-5xl);
+    font-weight: 800;
+    color: #ffffff;
     line-height: 1;
+    background: linear-gradient(135deg, #ffffff 0%, #808080 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .count-label {
     font-size: var(--text-sm);
-    color: #737373;
+    color: #666;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
+    font-weight: 500;
   }
 
   .domain-nav {
     display: flex;
     flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    text-decoration: none;
+    border-radius: 8px;
+    background: #141414;
+    border: 1px solid #222;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .nav-item:hover {
+    border-color: #333;
+    transform: translateX(4px);
+  }
+
+  .nav-item:hover::before {
+    transform: translateX(100%);
+  }
+
+  .nav-color-bar {
+    width: 3px;
+    height: 40px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .nav-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .nav-name {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .nav-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--text-xs);
+    color: #666;
+  }
+
+  .nav-arrow {
+    width: 16px;
+    height: 16px;
+    color: #666;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .nav-item:hover .nav-arrow {
+    transform: translateX(4px);
+    color: #999;
+  }
+
+  .sidebar-decoration {
+    position: absolute;
+    bottom: var(--space-16);
+    left: var(--space-8);
+    right: var(--space-8);
+    display: flex;
+    align-items: center;
     gap: var(--space-2);
   }
 
-  .domain-link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-4) var(--space-4);
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 150ms ease;
+  .decoration-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #333 0%, transparent 100%);
   }
 
-  .domain-link:hover {
-    background: #ffffff;
-  }
-
-  .domain-name {
-    font-size: var(--text-base);
-    font-weight: 600;
-    color: #171717;
-  }
-
-  .domain-count {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: var(--text-sm);
-    color: #737373;
+  .decoration-dot {
+    width: 6px;
+    height: 6px;
+    background: #666;
+    border-radius: 50%;
   }
 
   /* ============================================================================
      PROJECT CATALOG
      ============================================================================ */
 
-  .project-catalog {
+  .catalog {
     grid-area: catalog;
+    background: #0f0f0f;
     padding: var(--space-24) var(--space-12);
+  }
+
+  .domain-block {
+    margin-bottom: calc(var(--space-24) * 2);
     max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .domain-section {
-    margin-bottom: var(--space-24);
-  }
-
-  .domain-section:last-child {
+  .domain-block:last-child {
     margin-bottom: 0;
   }
 
   .domain-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
     margin-bottom: var(--space-12);
-    padding-bottom: var(--space-6);
-    border-bottom: 2px solid #171717;
+  }
+
+  .header-top {
+    position: relative;
+    margin-bottom: var(--space-6);
+  }
+
+  .domain-color-field {
+    position: absolute;
+    left: -12px;
+    top: -12px;
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    opacity: 0.5;
+    filter: blur(40px);
   }
 
   .domain-title {
-    font-size: var(--text-3xl);
-    font-weight: 700;
-    color: #171717;
+    position: relative;
+    font-size: var(--text-4xl);
+    font-weight: 800;
+    color: #ffffff;
     letter-spacing: -0.02em;
+    text-shadow: 0 0 40px var(--domain-color)40;
   }
 
-  .domain-project-count {
+  .domain-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .meta-count {
     font-family: 'JetBrains Mono', monospace;
     font-size: var(--text-sm);
-    color: #737373;
+    color: #666;
     font-weight: 500;
   }
 
-  .domain-projects {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
+  .meta-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, var(--domain-color)60, transparent);
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--space-6);
   }
 
   /* ============================================================================
-     PROJECT ENTRY
+     PROJECT CARDS
      ============================================================================ */
 
-  .project-entry {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: var(--space-6);
-    padding: var(--space-6) 0;
-    border-bottom: 1px solid #e5e5e5;
-  }
-
-  .project-entry:last-child {
-    border-bottom: none;
-  }
-
-  .project-index {
+  .project-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: var(--space-6);
     display: flex;
     flex-direction: column;
+    gap: var(--space-4);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--domain-color)60, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .project-card:hover {
+    border-color: var(--domain-color)40;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--domain-color)20;
+  }
+
+  .project-card:hover::before {
+    opacity: 1;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
     align-items: flex-start;
-    gap: var(--space-2);
+    margin-bottom: var(--space-2);
   }
 
-  .project-number {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: #171717;
-    line-height: 1;
-  }
-
-  .project-status {
-    font-size: var(--text-xl);
-    color: #737373;
-    line-height: 1;
-  }
-
-  .project-main {
+  .card-number-group {
     display: flex;
-    flex-direction: column;
+    align-items: baseline;
     gap: var(--space-3);
   }
 
-  .project-title {
+  .card-index {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    opacity: 0.4;
+  }
+
+  .card-status {
+    font-size: var(--text-xl);
+    color: #666;
+    line-height: 1;
+  }
+
+  .card-accent {
+    width: 40px;
+    height: 3px;
+    border-radius: 2px;
+    opacity: 0.6;
+  }
+
+  .card-title {
     font-size: var(--text-xl);
     font-weight: 700;
-    color: #171717;
+    color: #ffffff;
     line-height: 1.3;
     letter-spacing: -0.01em;
     margin: 0;
+    margin-bottom: var(--space-2);
   }
 
-  .project-description {
-    font-size: var(--text-base);
-    line-height: 1.5;
-    color: #525252;
+  .card-description {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: #999;
     margin: 0;
+    margin-bottom: var(--space-4);
   }
 
-  .project-tech-list {
+  .card-tech {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
   }
 
-  .project-tech {
+  .card-tech-tag {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 10px;
+    font-weight: 600;
     padding: var(--space-1) var(--space-2);
-    background: #f5f5f5;
-    color: #525252;
-    border-radius: 3px;
+    background: #222;
+    color: #999;
+    border-radius: 4px;
+    border: 1px solid #2a2a2a;
+  }
+
+  .card-tech-more {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: var(--space-1) var(--space-2);
+    background: transparent;
+    color: #666;
+  }
+
+  .card-footer {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid #222;
+  }
+
+  .footer-pattern {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .pattern-dot {
+    width: 4px;
+    height: 4px;
+    background: #333;
+    border-radius: 50%;
+  }
+
+  /* ============================================================================
+     PORTFOLIO FOOTER
+     ============================================================================ */
+
+  .portfolio-footer {
+    grid-area: footer;
+    padding: var(--space-16) var(--space-12);
+    background: #0a0a0a;
+    border-top: 1px solid #222;
+  }
+
+  .footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .footer-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--text-sm);
+    color: #666;
+    font-weight: 600;
+  }
+
+  .badge-bracket {
+    color: #444;
+  }
+
+  .footer-line {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #333, transparent);
   }
 
   /* ============================================================================
      RESPONSIVE
      ============================================================================ */
 
-  @media (max-width: 1024px) {
-    .exhibition {
+  @media (max-width: 1280px) {
+    .portfolio {
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto;
+      grid-template-rows: auto auto auto auto;
       grid-template-areas:
         "hero"
-        "index"
-        "catalog";
+        "sidebar"
+        "catalog"
+        "footer";
     }
 
-    .hero-project {
+    .hero {
       border-right: none;
-      border-bottom: 1px solid #e5e5e5;
-      min-height: 80vh;
-      padding: var(--space-16) var(--space-8);
+      border-bottom: 1px solid #222;
+      min-height: 85vh;
     }
 
-    .domain-index {
-      padding: var(--space-12) var(--space-8);
+    .hero-accent-line {
+      width: 100%;
+      height: 4px;
+      top: auto;
+      bottom: 0;
+      background: linear-gradient(90deg, var(--domain-color) 0%, transparent 100%);
     }
 
-    .project-catalog {
-      padding: var(--space-16) var(--space-8);
-    }
-
-    .project-entry {
-      grid-template-columns: 60px 1fr;
+    .domain-sidebar {
+      border-left: none;
+      border-bottom: 1px solid #222;
     }
   }
 
-  @media (max-width: 640px) {
-    .hero-project {
-      padding: var(--space-12) var(--space-4);
-    }
-
-    .hero-number {
-      font-size: var(--text-4xl);
+  @media (max-width: 768px) {
+    .hero {
+      padding: var(--space-16) var(--space-6);
     }
 
     .hero-title {
-      font-size: var(--text-2xl);
+      font-size: clamp(2.5rem, 12vw, 4rem);
     }
 
-    .hero-description {
-      font-size: var(--text-base);
+    .domain-sidebar {
+      padding: var(--space-12) var(--space-6);
     }
 
-    .domain-index {
-      padding: var(--space-8) var(--space-4);
+    .catalog {
+      padding: var(--space-16) var(--space-6);
     }
 
-    .project-catalog {
-      padding: var(--space-12) var(--space-4);
+    .project-grid {
+      grid-template-columns: 1fr;
     }
 
     .domain-title {
-      font-size: var(--text-2xl);
-    }
-
-    .project-entry {
-      grid-template-columns: 50px 1fr;
-      gap: var(--space-4);
-    }
-
-    .project-number {
-      font-size: var(--text-xl);
-    }
-
-    .project-title {
-      font-size: var(--text-lg);
+      font-size: var(--text-3xl);
     }
   }
 </style>
