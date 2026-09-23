@@ -1,0 +1,305 @@
+---
+import PortfolioLayout from '../layouts/PortfolioLayout.astro';
+import StatsOverview from '../components/StatsOverview.astro';
+import { projects } from '../data/projects.js';
+
+// Sort projects by year (most recent first) and status
+const sortedProjects = [...projects].sort((a, b) => {
+  const yearA = parseInt(a.year.split('-').pop());
+  const yearB = parseInt(b.year.split('-').pop());
+  return yearB - yearA;
+});
+
+// Status display mapping
+const statusDisplay = {
+  'in-progress': 'In Progress',
+  'complete': 'Complete',
+  'prototype': 'Prototype',
+  'educational': 'Educational'
+};
+
+// Status colors (subtle, following design tokens)
+const statusColors = {
+  'in-progress': 'var(--color-info)',
+  'complete': 'var(--color-success)',
+  'prototype': 'var(--color-warning)',
+  'educational': 'var(--color-accent)'
+};
+---
+
+<PortfolioLayout title="Portfolio Dashboard">
+  <main class="dashboard">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Portfolio Dashboard</h1>
+      <p class="dashboard-subtitle">
+        A comprehensive showcase of projects spanning web development, mobile applications,
+        artificial intelligence, and blockchain technology.
+      </p>
+    </header>
+
+    <section class="stats-section">
+      <StatsOverview />
+    </section>
+
+    <section class="projects-section">
+      <div class="projects-grid">
+        {sortedProjects.map((project) => (
+          <article class="project-card">
+            <div class="project-card-header">
+              <h3 class="project-name">{project.name}</h3>
+              <div class="project-meta">
+                <span class="project-year">{project.year}</span>
+                <span
+                  class="project-status"
+                  style={`color: ${statusColors[project.status]}`}
+                >
+                  {statusDisplay[project.status]}
+                </span>
+              </div>
+            </div>
+
+            <p class="project-tagline">{project.tagline}</p>
+
+            <div class="project-tech">
+              {project.techStack.primary.map((tech) => (
+                <span class="tech-badge">{tech}</span>
+              ))}
+            </div>
+
+            <div class="project-domains">
+              {project.domain.map((domain) => (
+                <span class="domain-tag">{domain}</span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+</PortfolioLayout>
+
+<style>
+  /* ============================================================================
+     DASHBOARD LAYOUT
+     ============================================================================ */
+
+  .dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+  }
+
+  /* ============================================================================
+     HEADER
+     ============================================================================ */
+
+  .dashboard-header {
+    margin-bottom: var(--space-12);
+    text-align: center;
+  }
+
+  .dashboard-title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    line-height: var(--line-tight);
+  }
+
+  .dashboard-subtitle {
+    font-size: var(--text-md);
+    color: var(--color-text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: var(--line-relaxed);
+  }
+
+  /* ============================================================================
+     STATS SECTION
+     ============================================================================ */
+
+  .stats-section {
+    margin-bottom: var(--space-16);
+  }
+
+  /* ============================================================================
+     PROJECTS GRID
+     ============================================================================ */
+
+  .projects-section {
+    margin-bottom: var(--space-16);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-8);
+  }
+
+  /* ============================================================================
+     PROJECT CARD
+     ============================================================================ */
+
+  .project-card {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-6);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .project-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .project-name {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-tight);
+    margin: 0;
+  }
+
+  .project-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .project-year {
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .project-status {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .project-tagline {
+    color: var(--color-text-secondary);
+    font-size: var(--text-base);
+    line-height: var(--line-normal);
+    margin: 0;
+  }
+
+  /* ============================================================================
+     TECH STACK BADGES
+     ============================================================================ */
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tech-badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  /* ============================================================================
+     DOMAIN TAGS
+     ============================================================================ */
+
+  .project-domains {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .domain-tag {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    background-color: transparent;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent);
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  /* ============================================================================
+     RESPONSIVE BREAKPOINTS
+     ============================================================================ */
+
+  /* Tablet: 2 columns */
+  @media (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-6);
+    }
+
+    .dashboard {
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .dashboard-title {
+      font-size: var(--text-3xl);
+    }
+
+    .dashboard-subtitle {
+      font-size: var(--text-base);
+    }
+  }
+
+  /* Mobile: 1 column */
+  @media (max-width: 640px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .dashboard {
+      padding: var(--space-4) var(--space-3);
+    }
+
+    .dashboard-header {
+      margin-bottom: var(--space-8);
+    }
+
+    .dashboard-title {
+      font-size: var(--text-2xl);
+    }
+
+    .dashboard-subtitle {
+      font-size: var(--text-sm);
+    }
+
+    .stats-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .project-card {
+      padding: var(--space-4);
+    }
+
+    .project-name {
+      font-size: var(--text-lg);
+    }
+  }
+</style>

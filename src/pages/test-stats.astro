@@ -1,0 +1,52 @@
+---
+import StatsOverview from '../components/StatsOverview.astro';
+import { projects } from '../data/projects.js';
+
+// Debug calculations
+const allLanguages = new Set<string>();
+projects.forEach(project => {
+  project.techStack.full.forEach(tech => {
+    const techLower = tech.toLowerCase();
+    if (techLower.includes('python')) allLanguages.add('Python');
+    if (techLower.includes('javascript') && !techLower.includes('typescript')) allLanguages.add('JavaScript');
+    if (techLower.includes('typescript')) allLanguages.add('TypeScript');
+    if (techLower.includes('go ') || tech === 'Go 1.22+') allLanguages.add('Go');
+    if (techLower.includes('swift')) allLanguages.add('Swift');
+    if (techLower.includes('html') || techLower.includes('css')) allLanguages.add('HTML/CSS');
+  });
+});
+
+const allDomains = new Set<string>();
+projects.forEach(project => {
+  project.domain.forEach(domain => allDomains.add(domain));
+});
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats Overview Test</title>
+  <link rel="stylesheet" href="/src/styles/global.css">
+</head>
+<body>
+  <div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+    <h1>Stats Overview Component Test</h1>
+
+    <StatsOverview />
+
+    <div style="margin-top: 3rem; padding: 2rem; background: #f9f9f9; border-radius: 8px;">
+      <h2>Expected Values:</h2>
+      <ul>
+        <li><strong>Projects:</strong> 14 ✓ (actual: {projects.length})</li>
+        <li><strong>Core Languages:</strong> 6 ✓ (actual: {allLanguages.size})</li>
+        <li><strong>Languages Found:</strong> {Array.from(allLanguages).join(', ')}</li>
+        <li><strong>Technical Domains:</strong> 5 ✓ (actual: {allDomains.size})</li>
+        <li><strong>Domains Found:</strong> {Array.from(allDomains).join(', ')}</li>
+        <li><strong>Year Range:</strong> Should show 2023-2024</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
