@@ -52,22 +52,26 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     <div class="about-container">
       <div class="about-content">
         <div class="about-text">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>Available for Full-Stack & AI Roles · 2026</span>
+          </div>
           <span class="section-label">< developer /></span>
           <h2 class="about-title">Vyacheslav Plotnikov</h2>
-          <p class="about-tagline">Full-Stack Developer & AI Engineer</p>
+          <p class="about-tagline">Full-Stack Developer & AI Systems Engineer</p>
 
           <div class="about-description">
-            <p>I build intelligent systems across the stack—from iOS apps with HealthKit integration to blockchain protocols, computer vision pipelines, and AI-powered web applications.</p>
+            <p>I build intelligent, reliable software across the entire stack—from native iOS experiences with HealthKit integration to high-throughput Go backends, cryptographic protocols, and real-time computer vision pipelines.</p>
 
-            <p>My work spans mobile development (React Native, iOS), machine learning (TensorFlow, PyTorch, YOLO), web technologies (React, Astro, Node.js), and blockchain systems. I approach each project with a focus on architecture, performance, and user experience.</p>
+            <p>I care deeply about software craftsmanship, clean domain architecture, and snappy UX. Rather than staying siloed in one layer, I take pride in understanding systems end-to-end: training models in PyTorch/YOLO, writing type-safe TypeScript & Go services, and deploying production-ready monorepos.</p>
 
-            <p>Currently exploring the intersection of AI and practical applications—building tools that solve real problems with modern technology.</p>
+            <p>Based in Schengen, Luxembourg. Currently exploring the intersection of agentic AI and practical developer tooling.</p>
           </div>
 
           <div class="tech-summary">
             <div class="tech-category">
               <span class="tech-label">Languages</span>
-              <span class="tech-list">Python, JavaScript, TypeScript, Solidity, Java, C++</span>
+              <span class="tech-list">Python, JavaScript, TypeScript, Go, Solidity, Java, C++</span>
             </div>
             <div class="tech-category">
               <span class="tech-label">Specialties</span>
@@ -105,7 +109,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                 <circle cx="12" cy="10" r="3"/>
               </svg>
-              <span>Diekirch, Luxembourg</span>
+              <span>Schengen, Luxembourg</span>
             </div>
           </div>
         </div>
@@ -224,6 +228,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
               <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
             </svg>
             <input type="text" id="tech-search" placeholder="Filter by tech or keyword (e.g. Python, YOLO, Solidity, React)..." aria-label="Search projects" />
+            <kbd class="search-kbd" id="search-kbd-hint" aria-hidden="true" title="Press / to search">/</kbd>
             <button id="clear-search" class="clear-search" aria-label="Clear search" style="display: none;">✕</button>
           </div>
         </div>
@@ -263,7 +268,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
           <div class="project-grid">
             {domainProjects.map((project, index) => (
               <article
-                class="project-card"
+                class={`project-card ${['Momentum', 'Momentum Full-Stack', 'YOLO Vision Lab', 'Advanced Cryptocurrency Blockchain'].includes(project.name) ? 'is-flagship' : ''}`}
                 data-project-name={project.name}
                 data-project-domain={domain}
                 data-project-tech={project.techStack.full.join(' ').toLowerCase()}
@@ -277,6 +282,9 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
                     <span class="card-status" title={statusDisplay[project.status].label}>
                       {statusDisplay[project.status].symbol}
                     </span>
+                    {['Momentum', 'Momentum Full-Stack', 'YOLO Vision Lab', 'Advanced Cryptocurrency Blockchain'].includes(project.name) && (
+                      <span class="card-flagship-badge">★ Flagship</span>
+                    )}
                   </div>
                   <div class="card-accent" style={`background: ${domains[domain].color}`}></div>
                 </div>
@@ -419,6 +427,37 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
           emptyResetBtn.addEventListener('click', resetAllFilters);
         }
 
+        // Global '/' shortcut to focus search
+        window.addEventListener('keydown', (e) => {
+          const targetTag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+          const isTyping = targetTag === 'input' || targetTag === 'textarea';
+          const isModalOpen = document.getElementById('project-modal')?.classList.contains('is-open');
+
+          if (e.key === '/' && !isTyping && !isModalOpen) {
+            e.preventDefault();
+            searchInput?.focus();
+            searchInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+
+          if (e.key === 'Escape' && document.activeElement === searchInput) {
+            if (searchInput && searchInput.value) {
+              resetAllFilters();
+            } else if (searchInput) {
+              searchInput.blur();
+            }
+          }
+        });
+
+        if (searchInput) {
+          const kbd = document.getElementById('search-kbd-hint');
+          searchInput.addEventListener('focus', () => {
+            if (kbd) kbd.style.opacity = '0';
+          });
+          searchInput.addEventListener('blur', () => {
+            if (kbd && !searchInput.value) kbd.style.opacity = '1';
+          });
+        }
+
         filterPills.forEach((pill) => {
           pill.addEventListener('click', () => {
             filterPills.forEach(p => p.classList.remove('active'));
@@ -508,6 +547,45 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   .about-text {
     animation: fadeInUp 0.8s ease-out;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #34d399;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    margin-bottom: var(--space-4);
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    background: #10b981;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .status-dot::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1.5px solid #10b981;
+    animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+
+  @keyframes pulseRing {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    50% { transform: scale(1.8); opacity: 0; }
+    100% { transform: scale(0.8); opacity: 0; }
   }
 
   .section-label {
@@ -1045,6 +1123,24 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     outline-offset: 2px;
   }
 
+  .project-card.is-flagship {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, #1a1a20 0%, #121216 100%);
+  }
+
+  .card-flagship-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--domain-color, #00b4d8);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
   .card-header {
     display: flex;
     justify-content: space-between;
@@ -1393,10 +1489,29 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
+    z-index: 2;
   }
 
   .clear-search:hover {
     color: #ffffff;
+  }
+
+  .search-kbd {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #222227;
+    border: 1px solid #383842;
+    color: #8e8e98;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 5px;
+    pointer-events: none;
+    line-height: 1;
+    transition: opacity 0.15s ease;
   }
 
   .filter-pills {
