@@ -447,20 +447,6 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
           }
         });
 
-        if (searchInput) {
-          const kbd = document.getElementById('search-kbd-hint');
-          searchInput.addEventListener('focus', () => {
-            if (kbd) kbd.style.opacity = '0';
-            backToTopBtn?.classList.remove('is-visible');
-          });
-          searchInput.addEventListener('blur', () => {
-            if (kbd && !searchInput.value) kbd.style.opacity = '1';
-            if (window.scrollY > 800) {
-              backToTopBtn?.classList.add('is-visible');
-            }
-          });
-        }
-
         filterPills.forEach((pill) => {
           pill.addEventListener('click', () => {
             filterPills.forEach(p => p.classList.remove('active'));
@@ -499,15 +485,24 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
           });
         });
 
-        // Back to top
+        // Back to top - only visible when scrolled deep into the project catalog
         if (backToTopBtn) {
-          window.addEventListener('scroll', () => {
-            if (window.scrollY > 800 && document.activeElement !== searchInput) {
+          const catalogSection = document.querySelector('.catalog') as HTMLElement | null;
+
+          const updateBackToTop = () => {
+            if (!catalogSection) return;
+            const catalogRect = catalogSection.getBoundingClientRect();
+            // Only show when user is at least 100px past the start of the catalog
+            const isDeepInCatalog = catalogRect.top < -100;
+
+            if (isDeepInCatalog && document.activeElement !== searchInput) {
               backToTopBtn.classList.add('is-visible');
             } else {
               backToTopBtn.classList.remove('is-visible');
             }
-          }, { passive: true });
+          };
+
+          window.addEventListener('scroll', updateBackToTop, { passive: true });
 
           backToTopBtn.addEventListener('click', () => {
             if ((window as any).lenis) {
@@ -516,6 +511,18 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }
           });
+
+          if (searchInput) {
+            const kbd = document.getElementById('search-kbd-hint');
+            searchInput.addEventListener('focus', () => {
+              if (kbd) kbd.style.opacity = '0';
+              backToTopBtn.classList.remove('is-visible');
+            });
+            searchInput.addEventListener('blur', () => {
+              if (kbd && !searchInput.value) kbd.style.opacity = '1';
+              updateBackToTop();
+            });
+          }
         }
       });
     </script>
@@ -530,7 +537,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
   .portfolio {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
-    grid-template-rows: auto 100vh auto auto;
+    grid-template-rows: auto minmax(80vh, auto) auto auto;
     grid-template-areas:
       "about about"
       "hero sidebar"
@@ -710,12 +717,13 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
   .hero {
     grid-area: hero;
     position: relative;
-    padding: calc(var(--space-24) * 2) var(--space-16);
+    padding: var(--space-16) var(--space-16);
     display: flex;
     flex-direction: column;
     justify-content: center;
     background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
     overflow: hidden;
+    min-height: 80vh;
   }
 
   .hero-bg-pattern {
@@ -744,7 +752,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     display: flex;
     align-items: center;
     gap: var(--space-4);
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
   }
 
   .line-number {
@@ -789,7 +797,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     font-size: var(--text-xl);
     line-height: 1.6;
     color: #b0b0b0;
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-8);
     max-width: 600px;
   }
 
@@ -797,8 +805,8 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-    margin-bottom: var(--space-12);
-    padding-bottom: var(--space-8);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
     border-bottom: 1px solid #333;
   }
 
@@ -871,22 +879,24 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   .domain-sidebar {
     grid-area: sidebar;
-    padding: calc(var(--space-24) * 2) var(--space-8);
+    padding: var(--space-12) var(--space-8);
     background: linear-gradient(135deg, #141414 0%, #0a0a0a 100%);
     border-left: 1px solid #222;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     position: relative;
+    min-height: 80vh;
   }
 
   .sidebar-header {
-    margin-bottom: var(--space-16);
+    margin-bottom: var(--space-6);
   }
 
   .sidebar-title {
     font-size: var(--text-2xl);
     font-weight: 700;
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-4);
     color: #ffffff;
     letter-spacing: -0.01em;
   }
@@ -905,7 +915,7 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   .count-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: var(--text-5xl);
+    font-size: var(--text-4xl);
     font-weight: 800;
     color: #ffffff;
     line-height: 1;
@@ -922,14 +932,14 @@ const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
   .domain-nav {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
   .nav-item {
     display: flex;
     align-items: center;
     gap: var(--space-4);
-    padding: var(--space-4);
+    padding: var(--space-3) var(--space-4);
     text-decoration: none;
     border-radius: 8px;
     background: #141414;
